@@ -3,7 +3,7 @@ import sympy
 import mpmath
 import numpy as np
 
-max_order        = 16
+max_order        = 6
 max_angular      = 10
 expansion_points = np.arange(-50, 50, dtype=np.float64)
 offset           = - int(expansion_points[0])
@@ -28,10 +28,11 @@ with open("taylor.py", "w") as f:
     f.write("import numpy as np\n")
     f.write("from numba import jit\n")
     f.write("\n\n")
-    f.write("table = np.zeros(({},{}))\n".format(max_angular+max_order, num_points))
+    f.write("table = np.array([\n")
     for i in range(max_angular+max_order):
         print(i)
-        f.write("table[{},:] = {}\n".format(i, [float(mpmath.hyp1f1(i+0.5, i+1.5, x)) for x in expansion_points]))
+        f.write("{},\n".format([float(mpmath.hyp1f1(i+0.5, i+1.5, x)) for x in expansion_points]))
+    f.write("])\n")
     f.write("\n\n")
     f.write("@jit(nopython=True, cache=True)\n")
     f.write("def taylor(a,z):\n")
